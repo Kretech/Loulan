@@ -1,10 +1,10 @@
-package net.romatic.jade.net.romatic.query;
+package net.romatic.query;
 
 import junit.framework.TestCase;
-import net.romatic.query.QueryBuilder;
-import net.romatic.query.grammar.MySQLGrammar;
-import org.junit.Assert;
+import net.romatic.query.grammar.MySqlGrammar;
 import org.junit.Test;
+
+import java.util.Arrays;
 
 /**
  * @author zhrlnt@gmail.com
@@ -14,11 +14,12 @@ public class QueryBuilderTest extends TestCase {
     @Test
     public void testBasicSQL() {
         QueryBuilder query = new QueryBuilder();
-        query.setGrammar(new MySQLGrammar());
+        query.setGrammar(new MySqlGrammar());
         query.select("id", "name")
                 .from("user")
                 .where("mobile", "like", "188%")
                 .where("post_number", 10)
+                .whereSub("id", "in", post -> post.select("author_id").from("post").where("name", "like", "%Java%"), "and")
                 .whereIn("age", 18, 24)
                 .orWhereIn("age", "25", "26")
                 .whereNull("deleted_at")
@@ -28,6 +29,7 @@ public class QueryBuilderTest extends TestCase {
                 .limit(10);
         String sql = query.toSQL();
         System.out.println(sql);
+        Arrays.stream(query.getFlatBindings()).forEach(System.out::println);
 
         //Assert.assertEquals(sql, "SELECT `id`, `name` FROM `user` WHERE `mobile` like ? AND `post_number` = ? AND `age` IN (?, ?) OR `age` IN (?, ?) AND `deleted_at` IS NULL ORDER BY `age` ASE, `id` DESC LIMIT 10 OFFSET 100");
     }
@@ -35,7 +37,7 @@ public class QueryBuilderTest extends TestCase {
     @Test
     public <T> void testRunSelect() {
         QueryBuilder queryBuilder = new QueryBuilder();
-        queryBuilder.setGrammar(new MySQLGrammar());
+        queryBuilder.setGrammar(new MySqlGrammar());
         queryBuilder.select()
                 .from("test")
                 .where("id", "<", 10)

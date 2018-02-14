@@ -79,13 +79,15 @@ public class QueryBuilder {
         return bindings;
     }
 
-    public String[] getFlatBindinds() {
+    public String[] getFlatBindings() {
         return getBindings().values().stream().flatMap(x -> x.stream()).map(x -> grammar.wrapValue(x, false)).toArray(String[]::new);
     }
 
     protected QueryBuilder appendBindings(Map<String, List<Object>> others) {
         for (Map.Entry entry : others.entrySet()) {
-            addBinding((String) entry.getKey(), entry.getValue());
+            ((List<Object>) entry.getValue()).forEach(x -> {
+                addBinding((String) entry.getKey(), x);
+            });
         }
 
         return this;
@@ -123,7 +125,7 @@ public class QueryBuilder {
         }
 
         if (value instanceof Function) {
-            whereSub(column, operator, (Function) value, andOr);
+            return whereSub(column, operator, (Function) value, andOr);
         }
 
         return whereBasic(column, operator, value, andOr);
@@ -166,10 +168,10 @@ public class QueryBuilder {
         return sub;
     }
 
-    protected QueryBuilder whereSub(String column, String operator, Function value, String andOr) {
+    protected QueryBuilder whereSub(String column, String operator, Function<QueryBuilder, QueryBuilder> value, String andOr) {
         QueryBuilder sub = newSub();
 
-        value.apply(sub);
+        sub = value.apply(sub);
 
         wheres.add(Condition.newInstance(Condition.TYPE_SUB, column, operator, sub, andOr));
         appendBindings(sub.getBindings());
@@ -201,7 +203,8 @@ public class QueryBuilder {
     }
 
     public <T> T[] get() {
-        return (T[]) runSelect();
+        T[] queryResults = (T[]) runSelect();
+        return queryResults;
     }
 
     protected Map<String, String>[] runSelect() {
@@ -213,7 +216,7 @@ public class QueryBuilder {
 
             String sql = toSQL();
             PreparedStatement statement = connection.prepareStatement(sql);
-            String[] args = getFlatBindinds();
+            String[] args = getFlatBindings();
 
             for (int i = 1; i <= args.length; i++) {
                 statement.setObject(i, args[i - 1]);
@@ -234,8 +237,7 @@ public class QueryBuilder {
             e.printStackTrace();
         }
 
-        Map<String, String>[] t = new Map[results.size()];
-        return results.toArray(t);
+        return results.toArray(new Map[0]);
     }
 
     public String toSQL() {
@@ -245,7 +247,7 @@ public class QueryBuilder {
     public String toSQLWithBound() {
 
 
-        System.out.println(getFlatBindinds());
+        System.out.println(getFlatBindings());
 
 
         return "";
