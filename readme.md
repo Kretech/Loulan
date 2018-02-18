@@ -18,7 +18,7 @@ https://www.jianshu.com/p/f3bf0af7a1ea
 
 ```java
 //  作者叫 庆，标签为 java 的所有已发布文章
-new Post.query
+List<Post> posts = Post.query
   .with("author", "tags")
   .has("author.name", "庆")
   .has("tags", query -> query.whereIn("name", "java"))
@@ -36,7 +36,7 @@ new Post.query
 
 ```java
 @SoftDelete()
-class Post extends Model{ 
+class Post extends Model { 
 }
 ```
 
@@ -45,11 +45,12 @@ class Post extends Model{
 ### Custom Query
 
 ```java
-class Post extends Model {
+interface PostQuery extends Query<Post> {
   
-  public Query scopePublished(Query query) {
+  default PostQuery published(Query query) {
     return query.where("status", "published");
   }
+    
 }
 ```
 
@@ -62,8 +63,8 @@ class Post extends Model {
 ## Eager Loading
 
 ```java
-Post post = new Post.query.with("author", "tags").first();
-System.out.println(post.author.name)
+Post post = Post.query.with("author", "tags").first();
+System.out.println(post.author.name);
 ```
 
 
