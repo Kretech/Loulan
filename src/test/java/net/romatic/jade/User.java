@@ -1,5 +1,8 @@
 package net.romatic.jade;
 
+import net.romatic.jade.annotation.Connection;
+
+@Connection(name = "db0")
 public class User extends Model {
     protected Long id;
 
@@ -20,11 +23,6 @@ public class User extends Model {
     public String getName() {
         return name;
     }
-
-//    @Scope
-//    public static UserQuery notDeleted(UserQuery query) {
-//        return query;
-//    }
 
     public void setName(String name) {
         this.name = name;

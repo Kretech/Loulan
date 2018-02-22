@@ -1,10 +1,10 @@
 package net.romatic.jade;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import net.romatic.com.ShouldToJson;
 import net.romatic.com.carbon.Carbon;
 import net.romatic.com.reflect.ReflectUtils;
 import net.romatic.jade.annotation.Column;
+import net.romatic.jade.annotation.Table;
 import net.romatic.query.QueryBuilder;
 import net.romatic.query.grammar.MySqlGrammar;
 import net.romatic.utils.JsonUtils;
@@ -19,24 +19,20 @@ import java.util.Map;
 /**
  * @author huiren
  */
+@Table()
 abstract public class Model implements ShouldToJson {
 
-    @JsonIgnore
-    protected String table;
     @Column("created_at")
     protected Carbon createdAt;
+
     @Column("updated_at")
     protected Carbon updatedAt;
+
+    /**
+     * 软删的默认字段
+     */
     @Column("deleted_at")
     protected Carbon deletedAt;
-
-    protected static final Class getCurrentClass() {
-        return new Object() {
-            public Class getClassForStatic() {
-                return this.getClass();
-            }
-        }.getClassForStatic();
-    }
 
     /**
      * 强烈建议重写此方法，把 calledClass 替换为指定的 Model，把计算转移到编译期
@@ -56,11 +52,22 @@ abstract public class Model implements ShouldToJson {
     }
 
     public String getTable() {
+        String table = getTableNameByAnnotation();
+
         if (null != table && table.length() > 0) {
             return table;
         }
 
         return WordUtils.snake(getClass().getSimpleName());
+    }
+
+    protected String getTableNameByAnnotation() {
+        Table table = this.getClass().getAnnotation(Table.class);
+        if (table != null) {
+            return table.name();
+        }
+
+        return "";
     }
 
     public Carbon getCreatedAt() {

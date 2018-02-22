@@ -1,8 +1,6 @@
 # Loulan
 
-[Eloquent](https://laravel.com/docs/eloquent) for java
-
-
+[Laravel-Eloquent](https://laravel.com/docs/eloquent) for java
 
 
 
@@ -50,7 +48,7 @@ interface PostQuery extends Query<Post> {
   default PostQuery published(Query query) {
     return query.where("status", "published");
   }
-    
+  
 }
 ```
 
@@ -72,14 +70,14 @@ System.out.println(post.author.name);
 ## Scalable
 
 ```java
+@Connection(name = "db0")
+@Table(name = "post")
 class Post extends Model {
   
-  protect String connectionName = "db0";
-  protect String table = "post";
-  
   public String getTable() {
-    return table + getId() % 10;
+    return super.getTable() + getId() % 10;
   }
+
 }
 ```
 
@@ -89,12 +87,10 @@ properties:
 loulan.connection.default = "db0"
 
 loulan.connections.db0.dsn = "jdbc:mysql://127.0.0.1:3306/test"
+loulan.connections.db0.user = "user"
 
 loulan.connections.db1.dsn = "jdbc:mysql://127.0.0.1:3306/test"
 loulan.connections.db1.read.user = "reader"
 loulan.connections.db1.write.user = "writer"
 ```
-
-
-
 
