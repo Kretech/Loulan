@@ -12,17 +12,56 @@ https://www.jianshu.com/p/f3bf0af7a1ea
 
 
 
-## Quick Start
+## Overview
 
 ```java
 //  作者叫 庆，标签为 java 的所有已发布文章
 List<Post> posts = Post.query
-  .with("author", "tags")
-  .has("author.name", "庆")
-  .has("tags", query -> query.whereIn("name", "java"))
-  .published()
+  .with("author", "tags")				// 预加载，自动把数据组装到 post.author 对象 
+  .has("author.name", "庆")				// 一对多嵌套查询
+  .has("tags", query -> query.whereIn("name", "java"))	// 多对多嵌套查询
+  .published()						// 封装好的业务查询
   .get();
 ```
+
+
+
+相当于以下三条 SQL 的结果合并起来。当然，真的想合并到对应的属性里，你还得一堆java代码。现在有了 Loulan，只需要上面几行代码。
+
+```sql
+--	post
+SELECT post.*
+FROM post
+where status = 'published' and where post.author_id in (
+	select id
+	FROM author
+	where name = '庆'
+) and where post.id in (
+	select post_id
+	FROM post_tag
+	where tag_id in (
+		select id
+	from tag
+	where `name` in "java"
+	)
+)
+
+-- author
+select *
+from author
+where id in (post1.id, post2.id, ...);
+
+-- tag
+select *
+from tag
+where id in (
+	select tag_id
+	from tag
+	where post_id in (post1.id, ...)
+)
+```
+
+
 
 
 

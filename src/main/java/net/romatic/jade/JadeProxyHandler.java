@@ -26,7 +26,10 @@ public class JadeProxyHandler implements InvocationHandler {
             //  传来的 method 是 接口的方法，不能直接 invoke
             method = builder.getClass().getMethod(AbstractMethod.getName(), AbstractMethod.getParameterTypes());
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(
+                    String.format("call method[%s] on %s", AbstractMethod.getName(), builder),
+                    e
+            );
         }
 
         Object ret = method.invoke(builder, args);

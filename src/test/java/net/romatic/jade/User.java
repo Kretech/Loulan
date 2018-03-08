@@ -1,15 +1,17 @@
 package net.romatic.jade;
 
 import net.romatic.jade.annotation.Connection;
+import net.romatic.jade.annotation.Query;
 
 @Connection(name = "db0")
+@Query(UserQuery.class)
 public class User extends Model {
     protected Long id;
 
     protected String name;
 
     public static UserQuery query() {
-        return new User().newQueryProxy(new JadeProxyHandler(new User().newQuery()), UserQuery.class);
+        return new User().newQuery();
     }
 
     public Long getId() {

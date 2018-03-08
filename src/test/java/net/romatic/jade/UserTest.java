@@ -1,6 +1,7 @@
 package net.romatic.jade;
 
-import junit.framework.TestCase;
+import net.romatic.TestCaseBase;
+import net.romatic.com.collection.Models;
 import org.junit.Test;
 
 import java.util.List;
@@ -8,7 +9,7 @@ import java.util.List;
 /**
  * @author zhrlnt@gmail.com
  */
-public class UserTest extends TestCase {
+public class UserTest extends TestCaseBase {
 
     @Test
     public void testBasicQuery() {
@@ -21,6 +22,7 @@ public class UserTest extends TestCase {
         System.out.println(sql);
 
         List<User> a = query.get();
+
         System.out.println(a.get(0).toJson());
 
         User u2 = User.query().first();
@@ -28,18 +30,30 @@ public class UserTest extends TestCase {
 
         User u3 = User.query().find(1);
         System.out.println(u3.toJson());
+
+        User.query().notDeleted().where().first();
     }
 
     @Test
     public void testLoadRelation() {
-        List<User> users = User.query().limit(10).get();
-        System.out.println(users.size());
+        PostQuery query = Post.query().with("author");
+        Post post = query.first();
+
+        dump(post, post.author);
+    }
+
+
+    @Test
+    public void testLoadRelations() {
+
+        Models posts = Post.query().with("author").get();
+
+        dump(posts);
+
     }
 
     public void testDemo() {
         User u = new User();
         System.out.println(u.id);
     }
-
-
 }

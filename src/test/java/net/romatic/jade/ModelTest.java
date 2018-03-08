@@ -14,7 +14,7 @@ public class ModelTest extends TestCase {
 
     @Test
     public void testModel() {
-        List<User> users = new User().newQuery()
+        List<User> users = new User().newJadeQuery()
                 .where("name", "hui")
                 .orWhere("name", "xin")
                 .whereIn("age", new int[]{18, 24})

@@ -211,7 +211,7 @@ public class QueryBuilder {
         List<Map<String, String>> results = new ArrayList<>();
 
         try {
-            Class.forName("com.mysql.jdbc.Driver").newInstance();
+            Class.forName("com.mysql.cj.jdbc.Driver").newInstance();
             java.sql.Connection connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3306/test", "root", "");
 
             String sql = toSQL();
@@ -245,10 +245,7 @@ public class QueryBuilder {
     }
 
     public String toSQLWithBound() {
-
-
         System.out.println(getFlatBindings());
-
 
         return "";
         //return grammar.compileSelect(this);
