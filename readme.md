@@ -32,36 +32,38 @@ List<Post> posts = Post.query
 --	post
 SELECT post.*
 FROM post
-where status = 'published' and where post.author_id in (
-	select id
-	FROM author
-	where name = '庆'
-) and where post.id in (
-	select post_id
-	FROM post_tag
-	where tag_id in (
-		select id
-	from tag
-	where `name` in "java"
-	)
+WHERE status = 'published' AND post.author_id IN (
+  SELECT id
+  FROM user
+  WHERE name = '庆'
+) AND post.id IN (
+  SELECT post_id
+  FROM post_tag
+  WHERE tag_id IN (
+    SELECT id
+    FROM tag
+    WHERE `name` IN ("java")
+  )
 )
 
 -- author
-select *
-from author
-where id in (post1.id, post2.id, ...);
+SELECT *
+FROM author
+WHERE id IN (post1.id, post2.id, ...);
 
 -- tag
-select *
-from tag
-where id in (
-	select tag_id
-	from tag
-	where post_id in (post1.id, ...)
+SELECT *
+FROM tag
+WHERE id IN (
+  SELECT tag_id
+  FROM tag
+  WHERE post_id IN (post1.id, ...)
 )
 ```
 
 
+
+- `has` 还未实现。。
 
 
 
