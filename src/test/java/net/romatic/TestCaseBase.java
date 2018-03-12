@@ -20,6 +20,6 @@ abstract public class TestCaseBase extends TestCase {
     }
 
     public <T> void print(T object) {
-        System.out.println("Console => " + object);
+        System.out.println("==> " + object);
     }
 }

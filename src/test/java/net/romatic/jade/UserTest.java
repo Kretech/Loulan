@@ -34,24 +34,6 @@ public class UserTest extends TestCaseBase {
         User.query().notDeleted().where().first();
     }
 
-    @Test
-    public void testLoadRelation() {
-        PostQuery query = Post.query().with("author");
-        Post post = query.first();
-
-        dump(post, post.author);
-    }
-
-
-    @Test
-    public void testLoadRelations() {
-
-        Models posts = Post.query().with("author").get();
-
-        dump(posts);
-
-    }
-
     public void testDemo() {
         User u = new User();
         System.out.println(u.id);

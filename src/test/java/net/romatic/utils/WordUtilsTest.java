@@ -14,5 +14,7 @@ public class WordUtilsTest extends TestCase {
         Assert.assertEquals(WordUtils.upperFirst("asd"), "Asd");
         Assert.assertEquals(WordUtils.upperFirst("Asd"), "Asd");
         Assert.assertEquals(WordUtils.upperFirst("1sd"), "1sd");
+
+        Assert.assertEquals(WordUtils.camel("author_id"), "authorId");
     }
 }
