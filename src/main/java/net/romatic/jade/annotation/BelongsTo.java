@@ -7,6 +7,8 @@ import java.lang.annotation.RetentionPolicy;
 
 /**
  * @author huiren
+ * <p>
+ * BelongsTo 表示属于某个模型的关系
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Relation
@@ -26,7 +28,7 @@ public @interface BelongsTo {
      *
      * @return
      */
-    String relatedKey() default "";
+    String relatedKey() default "id";
 
-    Class builder() default BelongsToBuilder.class;
+    Class<? extends net.romatic.jade.relation.Relation> builder() default BelongsToBuilder.class;
 }

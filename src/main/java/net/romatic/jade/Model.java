@@ -198,7 +198,7 @@ abstract public class Model implements ShouldToJson {
             Method setter = clz.getMethod("set" + WordUtils.upperFirst(key), field.getType());
             setter.invoke(this, value);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException(String.format("failed_setter: %s.set(%s, %s %s)", clz.getSimpleName(), key, value.getClass().getSimpleName(), value), e);
         }
     }
 

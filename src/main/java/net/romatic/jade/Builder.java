@@ -4,6 +4,7 @@ import net.romatic.com.collection.Models;
 import net.romatic.jade.relation.Relation;
 import net.romatic.jade.relation.RelationUtils;
 import net.romatic.query.QueryBuilder;
+import net.romatic.utils.JsonUtils;
 
 import java.lang.reflect.Field;
 import java.util.Map;
@@ -14,11 +15,11 @@ import java.util.stream.Stream;
 /**
  * @author zhrlnt@gmail.com
  */
-public class Builder<T extends Model> {
+public class Builder<M extends Model> {
 
     private QueryBuilder query;
 
-    private T model;
+    private M model;
 
     private String[] eagerRelations;
 
@@ -34,21 +35,21 @@ public class Builder<T extends Model> {
         return this;
     }
 
-    public T find(long id) {
-        return (T) where("id", id).first();
+    public M find(long id) {
+        return (M) where("id", id).first();
     }
 
-    public T first() {
-        return (T) limit(1).get().get(0);
+    public M first() {
+        return (M) limit(1).get().get(0);
     }
 
-    public Models<T> get() {
+    public Models<M> get() {
 
         //  attach scope
 
         //
         Map<String, Object>[] items = query.get();
-        Models<T> models = hydrate(items);
+        Models<M> models = hydrate(items);
 
         //  eager loading relation
         if (items.length > 0) {
@@ -58,8 +59,8 @@ public class Builder<T extends Model> {
         return models;
     }
 
-    public Models<T> hydrate(Map<String, Object>[] items) {
-        return Stream.of(items).map(attr -> (T) model.newInstance(attr)).collect(Collectors.toCollection(Models::new));
+    public Models<M> hydrate(Map<String, Object>[] items) {
+        return Stream.of(items).map(attr -> (M) model.newInstance(attr)).collect(Collectors.toCollection(Models::new));
     }
 
     public Builder where(String column, Object value) {
@@ -102,7 +103,7 @@ public class Builder<T extends Model> {
         return query;
     }
 
-    public void setModel(T model) {
+    public void setModel(M model) {
         this.model = model;
 
         query.from(model.getTable());
@@ -119,7 +120,7 @@ public class Builder<T extends Model> {
     }
 
 
-    protected Models<T> eagerLoadRelations(Models<T> models) {
+    protected Models<M> eagerLoadRelations(Models<M> models) {
 
         if (null != this.eagerRelations) {
             for (String relation : this.eagerRelations) {
@@ -130,14 +131,14 @@ public class Builder<T extends Model> {
         return models;
     }
 
-    public Models<T> eagerLoadRelation(Models<T> models, String relationName) {
+    public Models<M> eagerLoadRelation(Models<M> models, String relationName) {
 
         Relation relation = getRelation(relationName);
         if (relation != null) {
             relation.withEagerConstraints(models);
             //System.out.println("relation SQL: " + relation.getBuilder().getQuery().toSQL());
             Models objs = relation.getBuilder().get();
-            //System.out.println(JsonUtils.toJson(objs));
+            System.out.println(JsonUtils.toJson(objs));
 
             return relation.match(models, objs, relationName);
         }
@@ -145,7 +146,7 @@ public class Builder<T extends Model> {
         return models;
     }
 
-    public Relation getRelation(String relation) {
+    public <R extends Relation> R getRelation(String relation) {
 
         Field field = null;
         try {
@@ -153,7 +154,7 @@ public class Builder<T extends Model> {
         } catch (NoSuchFieldException e) {
             e.printStackTrace();
         }
-        Relation relationBuilder = RelationUtils.getRelation(model, field);
+        R relationBuilder = RelationUtils.getRelation(field);
 
         return relationBuilder;
     }

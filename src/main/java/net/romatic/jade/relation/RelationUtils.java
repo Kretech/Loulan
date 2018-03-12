@@ -3,41 +3,36 @@ package net.romatic.jade.relation;
 import net.romatic.jade.Builder;
 import net.romatic.jade.Model;
 import net.romatic.jade.annotation.BelongsTo;
+import net.romatic.jade.annotation.HasMany;
+import net.romatic.jade.annotation.HasOne;
+import net.romatic.jade.annotation.MappingClass;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 
 /**
  * @author huiren
  */
 public class RelationUtils {
-    public static Relation getRelation(Model model, Field field) {
+
+    public static <R extends Relation> R getRelation(Field field) {
         Annotation annotation = getFirstRelation(field);
 
-        Model related = getRelated(field);
-        //related.newQuery();
-        Builder builder = related.newJadeQuery();
-
         try {
-            if (annotation instanceof BelongsTo) {
-
-                String localKey = ((BelongsTo) annotation).localKey();
-                if ("".equals(localKey)) {
-                    localKey = field.getName() + "_id";
-                }
-                String relatedKey = ((BelongsTo) annotation).relatedKey();
-                if ("".equals(relatedKey)) {
-                    relatedKey = "id";
-                }
-
-                return BelongsToBuilder.newBelongsTo(
-                        field.getName(),
-                        model,
-                        localKey,
-                        relatedKey,
-                        builder
-                );
+            Class relationClass = (Class) annotation.getClass().getMethod("builder").invoke(annotation);
+            Relation relationHandler = (Relation) relationClass.newInstance();
+            {
+                relationHandler.initBy(field);
             }
+
+            return (R) relationHandler;
+
+        } catch (NoSuchMethodException e) {
+
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
 
         }
@@ -61,10 +56,17 @@ public class RelationUtils {
         return null;
     }
 
+    /**
+     * 获取一个关联模型的实例
+     *
+     * @param field
+     * @return
+     */
     protected static Model getRelated(Field field) {
         Class clz = field.getType();
-        if (clz.isArray()) {
-
+        MappingClass annotation = field.getAnnotation(MappingClass.class);
+        if (annotation != null) {
+            clz = annotation.value();
         }
 
         Model related = null;

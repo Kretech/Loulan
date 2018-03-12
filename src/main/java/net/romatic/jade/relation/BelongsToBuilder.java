@@ -3,8 +3,11 @@ package net.romatic.jade.relation;
 import net.romatic.com.collection.Models;
 import net.romatic.jade.Builder;
 import net.romatic.jade.Model;
+import net.romatic.jade.annotation.BelongsTo;
 import net.romatic.utils.WordUtils;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
@@ -13,12 +16,29 @@ import java.util.Map;
  */
 public class BelongsToBuilder extends Relation {
 
+    @Deprecated
     public static BelongsToBuilder newBelongsTo(String name, Model local, String localKey, String relatedKey, Builder foreignBuilder) {
         BelongsToBuilder belongsTo = new BelongsToBuilder();
 
-        belongsTo.init(foreignBuilder, local, localKey, relatedKey);
+        belongsTo.init(name, foreignBuilder, local, localKey, relatedKey);
 
         return belongsTo;
+    }
+
+    @Override
+    public void initBy(Field field) {
+        BelongsTo annotation = field.getAnnotation(BelongsTo.class);
+
+        Model related = RelationUtils.getRelated(field);
+        Builder builder = related.newJadeQuery();
+
+        String localKey = annotation.localKey();
+        String relatedKey = annotation.relatedKey();
+        if ("".equals(localKey)) {
+            localKey = field.getName() + "_id";
+        }
+
+        init(field.getName(), builder, local, localKey, relatedKey);
     }
 
     @Override
