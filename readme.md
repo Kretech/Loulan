@@ -1,4 +1,4 @@
-# Loulan
+# Loulan [![Build Status](https://travis-ci.org/Kretech/Loulan.svg?branch=master)](https://travis-ci.org/Kretech/Loulan)
 
 [Laravel-Eloquent](https://laravel.com/docs/eloquent) for java
 
