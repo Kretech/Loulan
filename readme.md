@@ -19,8 +19,8 @@ https://www.jianshu.com/p/f3bf0af7a1ea
 List<Post> posts = Post.query
   .with("author", "tags")				// 预加载，自动把数据组装到 post.author 对象 
   .has("author.name", "庆")				// 一对多嵌套查询
-  .has("tags", query -> query.whereIn("name", "java"))	// 多对多嵌套查询
-  .published()						// 封装好的业务查询
+  .has("tags", query -> query.whereIn("name", "java"))	// 多对多嵌套查询（*暂未实现）
+  .published()						// 封装好的业务查询（*暂未实现）
   .get();
 ```
 
@@ -60,10 +60,6 @@ WHERE id IN (
   WHERE post_id IN (post1.id, ...)
 )
 ```
-
-
-
-- `has` 还未实现。。
 
 
 
