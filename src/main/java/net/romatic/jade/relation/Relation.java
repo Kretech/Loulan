@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * @author huiren
  */
-abstract public class Relation {
+public abstract class Relation {
 
     /**
      * 关联表的查询

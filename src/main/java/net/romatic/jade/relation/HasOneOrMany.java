@@ -11,7 +11,7 @@ import java.util.List;
 /**
  * @author huiren
  */
-abstract public class HasOneOrMany extends Relation {
+public abstract class HasOneOrMany extends Relation {
 
     @Override
     public void initBy(Field field) {
