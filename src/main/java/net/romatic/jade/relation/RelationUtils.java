@@ -1,28 +1,29 @@
 package net.romatic.jade.relation;
 
-import net.romatic.jade.Builder;
+import com.sun.org.apache.xml.internal.security.encryption.ReferenceList;
+import net.romatic.com.reflect.ReflectUtils;
 import net.romatic.jade.Model;
-import net.romatic.jade.annotation.BelongsTo;
-import net.romatic.jade.annotation.HasMany;
-import net.romatic.jade.annotation.HasOne;
 import net.romatic.jade.annotation.MappingClass;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.util.List;
 
 /**
  * @author huiren
  */
 public class RelationUtils {
 
-    public static <R extends Relation> R getRelation(Field field) {
+    public static <R extends RelationBuilder, M extends Model> R getRelation(M model, String relationName) throws NoSuchFieldException {
+        Field field = model.getClass().getDeclaredField(relationName);
+        return getRelation(field);
+    }
+
+    public static <R extends RelationBuilder> R getRelation(Field field) {
         Annotation annotation = getFirstRelation(field);
 
         try {
             Class relationClass = (Class) annotation.getClass().getMethod("builder").invoke(annotation);
-            Relation relationHandler = (Relation) relationClass.newInstance();
+            RelationBuilder relationHandler = (RelationBuilder) relationClass.newInstance();
             {
                 relationHandler.initBy(field);
             }
@@ -41,7 +42,7 @@ public class RelationUtils {
     }
 
     /**
-     * 获取字段的有 Relation 意义的注解，如 HasOne
+     * 获取字段的有 RelationBuilder 意义的注解，如 HasOne
      *
      * @param field
      * @return
@@ -72,9 +73,7 @@ public class RelationUtils {
         Model related = null;
         try {
             related = (Model) clz.newInstance();
-        } catch (InstantiationException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
         return related;

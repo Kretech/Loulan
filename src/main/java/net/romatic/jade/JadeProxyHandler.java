@@ -1,5 +1,7 @@
 package net.romatic.jade;
 
+import net.romatic.com.exception.JadeException;
+
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 
@@ -15,19 +17,26 @@ public class JadeProxyHandler implements InvocationHandler {
     }
 
     @Override
-    public Object invoke(Object proxy, Method AbstractMethod, Object[] args) throws Throwable {
+    public Object invoke(Object proxy, Method abstractMethod, Object[] args) throws Throwable {
 
         if (args == null) {
             args = new Object[]{};
         }
 
-        Method method;
+        System.out.println(proxy instanceof Query);
+
+        if (abstractMethod.isDefault()) {
+            //return abstractMethod.invoke();
+        }
+
+        Method method = null;
+
         try {
             //  传来的 method 是 接口的方法，不能直接 invoke
-            method = builder.getClass().getMethod(AbstractMethod.getName(), AbstractMethod.getParameterTypes());
+            method = builder.getClass().getMethod(abstractMethod.getName(), abstractMethod.getParameterTypes());
         } catch (Exception e) {
-            throw new RuntimeException(
-                    String.format("call method[%s] on %s", AbstractMethod.getName(), builder),
+            throw JadeException.of(
+                    String.format("call method[%s] on %s", abstractMethod.getName(), builder),
                     e
             );
         }

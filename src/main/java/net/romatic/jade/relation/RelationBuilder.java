@@ -3,6 +3,7 @@ package net.romatic.jade.relation;
 import net.romatic.com.collection.Models;
 import net.romatic.jade.Builder;
 import net.romatic.jade.Model;
+import net.romatic.query.QueryBuilder;
 import net.romatic.utils.JsonUtils;
 
 import java.lang.reflect.Field;
@@ -11,7 +12,7 @@ import java.util.List;
 /**
  * @author huiren
  */
-abstract public class Relation {
+abstract public class RelationBuilder {
 
     /**
      * 关联表的查询
@@ -39,6 +40,18 @@ abstract public class Relation {
      * 右表字段名
      */
     protected String relatedKey;
+
+    public String getLocalKey() {
+        return localKey;
+    }
+
+    public String getRelatedKey() {
+        return relatedKey;
+    }
+
+    public Model getRelated() {
+        return related;
+    }
 
     public Builder getBuilder() {
         return builder;
@@ -83,6 +96,13 @@ abstract public class Relation {
      * @param models
      */
     public abstract void withEagerConstraints(List<? extends Model> models);
+
+    public Builder getHasInQuery(Builder parent) {
+        Builder builder = getRelated().newJadeQuery();
+        builder.getQuery().select(relatedKey);
+
+        return builder;
+    }
 
     /**
      * 匹配到 Models 的对应属性上

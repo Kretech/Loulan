@@ -31,7 +31,7 @@ public class UserTest extends TestCaseBase {
         User u3 = User.query().find(1);
         System.out.println(u3.toJson());
 
-        User.query().notDeleted().where().first();
+        User.query().notDeleted().first();
     }
 
     public void testDemo() {

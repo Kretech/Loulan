@@ -6,7 +6,6 @@ import net.romatic.jade.Model;
 import net.romatic.jade.annotation.BelongsTo;
 import net.romatic.utils.WordUtils;
 
-import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +13,7 @@ import java.util.Map;
 /**
  * @author huiren
  */
-public class BelongsToBuilder extends Relation {
+public class BelongsToBuilder extends RelationBuilder {
 
     @Deprecated
     public static BelongsToBuilder newBelongsTo(String name, Model local, String localKey, String relatedKey, Builder foreignBuilder) {

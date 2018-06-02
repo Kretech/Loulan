@@ -32,6 +32,7 @@ public class RelationWithTest extends TestCaseBase {
         UserQuery query = User.query().with("posts");
         User user = query.first();
 
+        user = User.query().with("posts", "publish_posts").first();
         dump(user, user.posts);
     }
 
@@ -39,7 +40,7 @@ public class RelationWithTest extends TestCaseBase {
      * m2m
      */
     @Test
-    void testBelongsToMany() {
+    public void testBelongsToMany() {
         Post post = Post.query().with("tags").first();
 
         dump(post, post.tags);

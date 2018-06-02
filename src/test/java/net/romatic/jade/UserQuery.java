@@ -8,7 +8,7 @@ public interface UserQuery extends Query<User> {
      * @return
      */
     default UserQuery notDeleted() {
-        return where().where();
+        return where("", 0);
     }
 
 }

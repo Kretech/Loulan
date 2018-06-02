@@ -128,6 +128,10 @@ public class QueryBuilder {
             return whereSub(column, operator, (Function) value, andOr);
         }
 
+        if (value instanceof QueryBuilder) {
+            return whereSub(column, operator, (QueryBuilder) value, andOr);
+        }
+
         return whereBasic(column, operator, value, andOr);
     }
 
@@ -175,6 +179,13 @@ public class QueryBuilder {
 
         wheres.add(Condition.newInstance(Condition.TYPE_SUB, column, operator, sub, andOr));
         appendBindings(sub.getBindings());
+
+        return this;
+    }
+
+    protected QueryBuilder whereSub(String column, String operator, QueryBuilder subQuery, String andOr) {
+        wheres.add(Condition.newInstance(Condition.TYPE_SUB, column, operator, subQuery, andOr));
+        appendBindings(subQuery.getBindings());
 
         return this;
     }

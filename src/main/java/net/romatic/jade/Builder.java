@@ -1,13 +1,18 @@
 package net.romatic.jade;
 
+import net.romatic.com.Closure;
+import net.romatic.com.NestedQuery;
 import net.romatic.com.collection.Models;
-import net.romatic.jade.relation.Relation;
+import net.romatic.com.exception.JadeException;
+import net.romatic.jade.annotation.Relation;
+import net.romatic.jade.relation.RelationBuilder;
 import net.romatic.jade.relation.RelationUtils;
 import net.romatic.query.QueryBuilder;
 import net.romatic.utils.JsonUtils;
 
 import java.lang.reflect.Field;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -15,7 +20,7 @@ import java.util.stream.Stream;
 /**
  * @author zhrlnt@gmail.com
  */
-public class Builder<M extends Model> {
+public class Builder<M extends Model> implements Query {
 
     private QueryBuilder query;
 
@@ -31,18 +36,22 @@ public class Builder<M extends Model> {
         return limit(limit);
     }
 
+    @Override
     public Builder limit(long limit) {
         return this;
     }
 
+    @Override
     public M find(long id) {
         return (M) where("id", id).first();
     }
 
+    @Override
     public M first() {
         return (M) limit(1).get().get(0);
     }
 
+    @Override
     public Models<M> get() {
 
         //  attach scope
@@ -63,6 +72,7 @@ public class Builder<M extends Model> {
         return Stream.of(items).map(attr -> (M) model.newInstance(attr)).collect(Collectors.toCollection(Models::new));
     }
 
+    @Override
     public Builder where(String column, Object value) {
         return where(column, "=", value);
     }
@@ -93,12 +103,31 @@ public class Builder<M extends Model> {
 
     public Builder whereHas(String relation, Function closure) {
 
-        Builder rel = new Builder(query);
-        closure.apply(rel);
+        return this;
+    }
+
+    @Override
+    public Builder has(String relationName, NestedQuery closure) {
+
+        RelationBuilder relation = null;
+
+        try {
+            relation = RelationUtils.getRelation(model, relationName);
+        } catch (NoSuchFieldException e) {
+            JadeException.panic(e);
+        }
+
+        Builder hasQuery = relation.getHasInQuery(relation.getBuilder());
+        hasQuery.callScope(closure);
+
+        System.out.println("T: " + hasQuery.getQuery().toSQL());
+
+        where(relation.getLocalKey(),"in", hasQuery.getQuery());
 
         return this;
     }
 
+    @Override
     public QueryBuilder getQuery() {
         return query;
     }
@@ -113,12 +142,12 @@ public class Builder<M extends Model> {
         return model;
     }
 
+    @Override
     public Builder with(String... eagerRelations) {
         this.eagerRelations = eagerRelations;
 
         return this;
     }
-
 
     protected Models<M> eagerLoadRelations(Models<M> models) {
 
@@ -133,7 +162,7 @@ public class Builder<M extends Model> {
 
     public Models<M> eagerLoadRelation(Models<M> models, String relationName) {
 
-        Relation relation = getRelation(relationName);
+        RelationBuilder relation = getRelation(relationName);
         if (relation != null) {
             relation.withEagerConstraints(models);
             //System.out.println("relation SQL: " + relation.getBuilder().getQuery().toSQL());
@@ -146,7 +175,7 @@ public class Builder<M extends Model> {
         return models;
     }
 
-    public <R extends Relation> R getRelation(String relation) {
+    public <R extends RelationBuilder> R getRelation(String relation) {
 
         Field field = null;
         try {
@@ -157,5 +186,9 @@ public class Builder<M extends Model> {
         R relationBuilder = RelationUtils.getRelation(field);
 
         return relationBuilder;
+    }
+
+    public void callScope(NestedQuery query) {
+        query.call(this);
     }
 }

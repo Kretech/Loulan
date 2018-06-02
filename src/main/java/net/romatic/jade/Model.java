@@ -29,19 +29,18 @@ abstract public class Model implements ShouldToJson {
     protected Carbon updatedAt;
 
     /**
-     * 软删的默认字段
-     */
-    @Column("deleted_at")
-    protected Carbon deletedAt;
-
-    /**
      * 为开发者方便书写的静态方法 ^_^
      * * 强烈建议重写此方法，把 model 替换为 this，把计算转移到编译期，大大提高性能
      *
      * @param <T>
      * @return
      */
-    public static <T extends Query> T query() {
+    public static <T extends Query, C> T query() {
+
+        StackTraceElement[] called = new Throwable().getStackTrace();
+
+        System.out.println(called);
+
         Class calledClass = Model.class;
 
         try {
@@ -133,14 +132,6 @@ abstract public class Model implements ShouldToJson {
 
     public void setUpdatedAt(Carbon updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public Carbon getDeletedAt() {
-        return deletedAt;
-    }
-
-    public void setDeletedAt(Carbon deletedAt) {
-        this.deletedAt = deletedAt;
     }
 
     public <T extends Model> T newInstance(Map<String, Object> attr) {

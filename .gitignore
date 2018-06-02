@@ -1,6 +1,10 @@
 
 *.iml
 .idea
+.vscode/
+.project
+.settings/
+.sts4-cache/
 
 # Compiled class file
 *.class

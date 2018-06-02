@@ -1,6 +1,7 @@
 package net.romatic.jade.annotation;
 
 import net.romatic.jade.relation.HasManyBuilder;
+import net.romatic.jade.relation.RelationBuilder;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -29,5 +30,5 @@ public @interface HasMany {
      */
     String relatedKey() default "";
 
-    Class<? extends net.romatic.jade.relation.Relation> builder() default HasManyBuilder.class;
+    Class<? extends RelationBuilder> builder() default HasManyBuilder.class;
 }

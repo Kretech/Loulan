@@ -1,5 +1,6 @@
 package net.romatic.jade;
 
+import net.romatic.com.NestedQuery;
 import net.romatic.com.collection.Models;
 import net.romatic.query.QueryBuilder;
 
@@ -24,7 +25,7 @@ public interface Query<M extends Model> {
     M first();
 
     /**
-     * 预加载 Relation
+     * 预加载 RelationBuilder
      *
      * @param eagerRelations
      * @param <Q>
@@ -32,9 +33,9 @@ public interface Query<M extends Model> {
      */
     <Q extends Query<M>> Q with(String... eagerRelations);
 
-    <Q extends Query<M>> Q where();
+    <Q extends Query<M>, V> Q where(String column, V value);
 
-    <E extends Query<M>, V> E where(String column, V value);
+    <Q extends Query<M>> Q has(String relationName, NestedQuery closure);
 
     <Q extends Query<M>> Q limit(long limit);
 

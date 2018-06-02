@@ -1,6 +1,7 @@
 package net.romatic.query;
 
 import junit.framework.TestCase;
+import net.romatic.TestCaseBase;
 import net.romatic.query.grammar.MySqlGrammar;
 import org.junit.Test;
 
@@ -9,7 +10,13 @@ import java.util.Arrays;
 /**
  * @author zhrlnt@gmail.com
  */
-public class QueryBuilderTest extends TestCase {
+public class QueryBuilderTest extends TestCaseBase {
+
+    protected QueryBuilder newQuery() {
+        QueryBuilder query = new QueryBuilder();
+        query.setGrammar(new MySqlGrammar());
+        return query;
+    }
 
     @Test
     public void testBasicSQL() {
@@ -32,6 +39,18 @@ public class QueryBuilderTest extends TestCase {
         Arrays.stream(query.getFlatBindings()).forEach(System.out::println);
 
         //Assert.assertEquals(sql, "SELECT `id`, `name` FROM `user` WHERE `mobile` like ? AND `post_number` = ? AND `age` IN (?, ?) OR `age` IN (?, ?) AND `deleted_at` IS NULL ORDER BY `age` ASE, `id` DESC LIMIT 10 OFFSET 100");
+    }
+
+    @Test
+    public void testSub() {
+        QueryBuilder query1 = newQuery();
+
+        QueryBuilder query2 = newQuery();
+        query2.from("user").where("id", 1);
+
+        query1.where("author_id", "in", query2);
+
+        dump(query1.toSQL());
     }
 
     @Test

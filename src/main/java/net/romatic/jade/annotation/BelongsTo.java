@@ -1,6 +1,7 @@
 package net.romatic.jade.annotation;
 
 import net.romatic.jade.relation.BelongsToBuilder;
+import net.romatic.jade.relation.RelationBuilder;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -30,5 +31,5 @@ public @interface BelongsTo {
      */
     String relatedKey() default "id";
 
-    Class<? extends net.romatic.jade.relation.Relation> builder() default BelongsToBuilder.class;
+    Class<? extends RelationBuilder> builder() default BelongsToBuilder.class;
 }
