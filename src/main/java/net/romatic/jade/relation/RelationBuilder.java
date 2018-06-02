@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * @author huiren
  */
-abstract public class RelationBuilder {
+public abstract class RelationBuilder {
 
     /**
      * 关联表的查询
