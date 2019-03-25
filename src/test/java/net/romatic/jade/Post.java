@@ -1,8 +1,7 @@
 package net.romatic.jade;
 
-import net.romatic.jade.annotation.BelongsTo;
-import net.romatic.jade.annotation.Column;
-import net.romatic.jade.annotation.Connection;
+import net.romatic.com.collection.Models;
+import net.romatic.jade.annotation.*;
 
 /**
  * @author huiren
@@ -20,10 +19,23 @@ public class Post extends Model {
 
     //@BelongsTo(localKey = "authorId", relatedKey = "id")
     @BelongsTo()
+    @Foreign(keyName = "authorId")
     protected User author;
+
+    @BelongsToMany(localKey = "post_id", relatedKey = "tag_id", table = "post_tag")
+    @MappingClass(Tag.class)
+    protected Models<Tag> tags;
 
     public static PostQuery query() {
         return new Post().newQuery();
+    }
+
+    public Models<Tag> getTags() {
+        return tags;
+    }
+
+    public void setTags(Models<Tag> tags) {
+        this.tags = tags;
     }
 
     public Long getId() {
